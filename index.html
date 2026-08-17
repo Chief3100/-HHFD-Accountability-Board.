@@ -56,7 +56,7 @@ font-size:17px;
 
 .container{
 
-padding:12px;
+padding:10px;
 
 }
 
@@ -68,9 +68,9 @@ border:1px solid #444;
 
 border-radius:8px;
 
-padding:12px;
+padding:10px;
 
-margin-bottom:12px;
+margin-bottom:10px;
 
 }
 
@@ -82,7 +82,7 @@ color:#7cff00;
 
 }
 
-input,textarea,select,button{
+input,button,select,textarea{
 
 width:100%;
 
@@ -100,7 +100,7 @@ box-sizing:border-box;
 
 }
 
-input,textarea,select{
+input,select,textarea{
 
 background:#333;
 
@@ -120,15 +120,7 @@ cursor:pointer;
 
 background:#7cff00;
 
-color:black;
-
-}
-
-.yellow{
-
-background:#ffd400;
-
-color:black;
+color:#000;
 
 }
 
@@ -137,6 +129,14 @@ color:black;
 background:#d60000;
 
 color:white;
+
+}
+
+.yellow{
+
+background:#ffd400;
+
+color:#000;
 
 }
 
@@ -158,15 +158,73 @@ gap:10px;
 
 }
 
-.member{
+.assignment-grid{
 
-background:#333;
+display:grid;
+
+grid-template-columns:repeat(3,1fr);
+
+gap:10px;
+
+}
+
+.zone{
+
+background:#1b1b1b;
+
+border:2px dashed #555;
+
+border-radius:8px;
 
 padding:8px;
 
-margin:5px 0;
+min-height:130px;
+
+}
+
+.zone h3{
+
+color:#ffd400;
+
+margin:0 0 8px 0;
+
+text-align:center;
+
+}
+
+.person-tag{
+
+background:#333;
+
+border-left:5px solid #7cff00;
+
+padding:10px;
+
+margin:6px 0;
 
 border-radius:5px;
+
+font-weight:bold;
+
+cursor:grab;
+
+touch-action:none;
+
+}
+
+.person-tag.selected{
+
+outline:3px solid #ffd400;
+
+background:#444;
+
+}
+
+.zone.selected-zone{
+
+border-color:#7cff00;
+
+background:#243000;
 
 }
 
@@ -188,9 +246,9 @@ text-align:center;
 
 .status{
 
-text-align:center;
-
 font-size:20px;
+
+text-align:center;
 
 font-weight:bold;
 
@@ -198,9 +256,29 @@ padding:10px;
 
 }
 
-@media(max-width:800px){
+.small-note{
 
-.grid{
+font-size:13px;
+
+color:#ccc;
+
+}
+
+@media(max-width:900px){
+
+.assignment-grid{
+
+grid-template-columns:repeat(2,1fr);
+
+}
+
+}
+
+@media(max-width:650px){
+
+.grid,
+
+.assignment-grid{
 
 grid-template-columns:1fr;
 
@@ -214,17 +292,13 @@ grid-template-columns:1fr;
 
 <body>
 
-<div id="maydayBanner">
-
-🚨 MAYDAY ACTIVE 🚨
-
-</div>
+<div id="maydayBanner">🚨 MAYDAY ACTIVE 🚨</div>
 
 <header>
 
 <h1>HOLLYWOOD HEIGHTS FIRE DEPARTMENT</h1>
 
-<h2>DIGITAL ACCOUNTABILITY BOARD</h2>
+<h2>DIGITAL INCIDENT ACCOUNTABILITY BOARD</h2>
 
 </header>
 
@@ -254,7 +328,7 @@ grid-template-columns:1fr;
 
 <button class="green" onclick="setStatus('UNDER CONTROL')">UNDER CONTROL</button>
 
-<button class="red" onclick="mayday()">MAYDAY</button>
+<button class="red" onclick="activateMayday()">MAYDAY</button>
 
 </div>
 
@@ -264,49 +338,43 @@ grid-template-columns:1fr;
 
 <div class="card">
 
-<h3>Chief 3100</h3>
+<h3>Add Personnel</h3>
 
-<input id="chiefName" placeholder="Add Personnel">
+<input id="personName" placeholder="Firefighter Name">
 
-<button class="green" onclick="addMember('chiefName','chiefCrew')">ADD PERSONNEL</button>
+<select id="personUnit">
 
-<div id="chiefCrew"></div>
+<option value="Chief 3100">Chief 3100</option>
+
+<option value="Pumper 3111">Pumper 3111</option>
+
+<option value="Pumper 3112">Pumper 3112</option>
+
+<option value="Hook & Ladder 3129">Hook & Ladder 3129</option>
+
+<option value="Mutual Aid">Mutual Aid</option>
+
+</select>
+
+<button class="green" onclick="addPerson()">ADD PERSONNEL</button>
+
+<div class="small-note">
+
+Tap a firefighter tag, then tap an assignment box to move them. You can also drag and drop the tag.
+
+</div>
 
 </div>
 
 <div class="card">
 
-<h3>Pumper 3111</h3>
+<h3>Personnel Pool / Available</h3>
 
-<input id="p3111Name" placeholder="Add Firefighter">
+<div id="available" class="zone" onclick="moveSelected('available')" ondragover="allowDrop(event)" ondrop="dropPerson(event,'available')">
 
-<button class="green" onclick="addMember('p3111Name','p3111Crew')">ADD FIREFIGHTER</button>
-
-<div id="p3111Crew"></div>
+<h3>AVAILABLE</h3>
 
 </div>
-
-<div class="card">
-
-<h3>Pumper 3112</h3>
-
-<input id="p3112Name" placeholder="Add Firefighter">
-
-<button class="green" onclick="addMember('p3112Name','p3112Crew')">ADD FIREFIGHTER</button>
-
-<div id="p3112Crew"></div>
-
-</div>
-
-<div class="card">
-
-<h3>Hook & Ladder 3129</h3>
-
-<input id="ladderName" placeholder="Add Firefighter">
-
-<button class="green" onclick="addMember('ladderName','ladderCrew')">ADD FIREFIGHTER</button>
-
-<div id="ladderCrew"></div>
 
 </div>
 
@@ -314,17 +382,81 @@ grid-template-columns:1fr;
 
 <h3>Fireground Assignments</h3>
 
-<textarea placeholder="Interior Crew"></textarea>
+<div class="assignment-grid">
 
-<textarea placeholder="Exterior Crew"></textarea>
+<div id="commandZone" class="zone" onclick="moveSelected('commandZone')" ondragover="allowDrop(event)" ondrop="dropPerson(event,'commandZone')">
 
-<textarea placeholder="Roof / Ventilation"></textarea>
+<h3>COMMAND</h3>
 
-<textarea placeholder="RIT"></textarea>
+</div>
 
-<textarea placeholder="Staging"></textarea>
+<div id="interior" class="zone" onclick="moveSelected('interior')" ondragover="allowDrop(event)" ondrop="dropPerson(event,'interior')">
 
-<textarea placeholder="Water Supply"></textarea>
+<h3>INTERIOR</h3>
+
+</div>
+
+<div id="divisionA" class="zone" onclick="moveSelected('divisionA')" ondragover="allowDrop(event)" ondrop="dropPerson(event,'divisionA')">
+
+<h3>DIVISION A</h3>
+
+</div>
+
+<div id="divisionB" class="zone" onclick="moveSelected('divisionB')" ondragover="allowDrop(event)" ondrop="dropPerson(event,'divisionB')">
+
+<h3>DIVISION B</h3>
+
+</div>
+
+<div id="divisionC" class="zone" onclick="moveSelected('divisionC')" ondragover="allowDrop(event)" ondrop="dropPerson(event,'divisionC')">
+
+<h3>DIVISION C</h3>
+
+</div>
+
+<div id="divisionD" class="zone" onclick="moveSelected('divisionD')" ondragover="allowDrop(event)" ondrop="dropPerson(event,'divisionD')">
+
+<h3>DIVISION D</h3>
+
+</div>
+
+<div id="roof" class="zone" onclick="moveSelected('roof')" ondragover="allowDrop(event)" ondrop="dropPerson(event,'roof')">
+
+<h3>ROOF / VENT</h3>
+
+</div>
+
+<div id="rit" class="zone" onclick="moveSelected('rit')" ondragover="allowDrop(event)" ondrop="dropPerson(event,'rit')">
+
+<h3>RIT</h3>
+
+</div>
+
+<div id="staging" class="zone" onclick="moveSelected('staging')" ondragover="allowDrop(event)" ondrop="dropPerson(event,'staging')">
+
+<h3>STAGING</h3>
+
+</div>
+
+<div id="water" class="zone" onclick="moveSelected('water')" ondragover="allowDrop(event)" ondrop="dropPerson(event,'water')">
+
+<h3>WATER SUPPLY</h3>
+
+</div>
+
+<div id="rehab" class="zone" onclick="moveSelected('rehab')" ondragover="allowDrop(event)" ondrop="dropPerson(event,'rehab')">
+
+<h3>REHAB</h3>
+
+</div>
+
+<div id="exterior" class="zone" onclick="moveSelected('exterior')" ondragover="allowDrop(event)" ondrop="dropPerson(event,'exterior')">
+
+<h3>EXTERIOR</h3>
+
+</div>
+
+</div>
 
 </div>
 
@@ -332,15 +464,15 @@ grid-template-columns:1fr;
 
 <h3>PAR</h3>
 
-<input placeholder="Crew / Division">
-
 <div class="grid">
 
-<button class="green" onclick="this.innerText='PAR ✔'">PAR</button>
+<button class="green" onclick="markAllPAR()">MARK ALL PAR</button>
 
-<button class="red" onclick="this.innerText='MISSING'">MISSING</button>
+<button class="yellow" onclick="clearPAR()">CLEAR PAR</button>
 
 </div>
+
+<div id="parStatus" class="status">PAR STATUS: NOT COMPLETED</div>
 
 </div>
 
@@ -348,15 +480,15 @@ grid-template-columns:1fr;
 
 <h3>Mayday Information</h3>
 
-<input placeholder="Firefighter Name / Unit">
+<input id="maydayName" placeholder="Firefighter Name / Unit">
 
-<input placeholder="Last Known Location">
+<input id="maydayLocation" placeholder="Last Known Location">
 
-<input placeholder="Assignment">
+<input id="maydayAssignment" placeholder="Assignment">
 
 <div class="grid">
 
-<button class="red" onclick="mayday()">ACTIVATE MAYDAY</button>
+<button class="red" onclick="activateMayday()">ACTIVATE MAYDAY</button>
 
 <button class="gray" onclick="clearMayday()">CLEAR MAYDAY</button>
 
@@ -368,7 +500,31 @@ grid-template-columns:1fr;
 
 <h3>Command Notes / Benchmarks</h3>
 
-<textarea style="height:140px" placeholder="Primary search complete&#10;Secondary search complete&#10;Utilities controlled&#10;Fire under control&#10;PAR complete"></textarea>
+<textarea id="notes" style="height:140px" placeholder="Primary Search Complete
+
+Secondary Search Complete
+
+Utilities Controlled
+
+Fire Under Control
+
+PAR Complete"></textarea>
+
+</div>
+
+<div class="card">
+
+<h3>Board Controls</h3>
+
+<div class="grid">
+
+<button class="green" onclick="saveBoard()">SAVE BOARD</button>
+
+<button class="yellow" onclick="loadBoard()">LOAD BOARD</button>
+
+</div>
+
+<button class="red" onclick="resetBoard()">RESET INCIDENT</button>
 
 </div>
 
@@ -376,23 +532,97 @@ grid-template-columns:1fr;
 
 <script>
 
-function addMember(inputId,listId){
+let selectedPerson = null;
 
-const input=document.getElementById(inputId);
+function addPerson(){
 
-if(!input.value.trim())return;
+const name=document.getElementById("personName").value.trim();
 
-const member=document.createElement("div");
+const unit=document.getElementById("personUnit").value;
 
-member.className="member";
+if(!name)return;
 
-member.innerHTML=input.value+
+const tag=document.createElement("div");
 
-' <button class="red" style="width:auto" onclick="this.parentElement.remove()">REMOVE</button>';
+tag.className="person-tag";
 
-document.getElementById(listId).appendChild(member);
+tag.draggable=true;
 
-input.value="";
+tag.id="person-"+Date.now();
+
+tag.innerHTML=name+"<br><small>"+unit+"</small>";
+
+tag.onclick=function(event){
+
+event.stopPropagation();
+
+selectPerson(tag);
+
+};
+
+tag.ondragstart=function(event){
+
+event.dataTransfer.setData("text/plain",tag.id);
+
+};
+
+document.getElementById("available").appendChild(tag);
+
+document.getElementById("personName").value="";
+
+saveBoard();
+
+}
+
+function selectPerson(tag){
+
+document.querySelectorAll(".person-tag").forEach(function(p){
+
+p.classList.remove("selected");
+
+});
+
+selectedPerson=tag;
+
+tag.classList.add("selected");
+
+}
+
+function moveSelected(zoneId){
+
+if(!selectedPerson)return;
+
+document.getElementById(zoneId).appendChild(selectedPerson);
+
+selectedPerson.classList.remove("selected");
+
+selectedPerson=null;
+
+saveBoard();
+
+}
+
+function allowDrop(event){
+
+event.preventDefault();
+
+}
+
+function dropPerson(event,zoneId){
+
+event.preventDefault();
+
+const id=event.dataTransfer.getData("text/plain");
+
+const person=document.getElementById(id);
+
+if(person){
+
+document.getElementById(zoneId).appendChild(person);
+
+saveBoard();
+
+}
 
 }
 
@@ -400,15 +630,19 @@ function setStatus(text){
 
 document.getElementById("status").innerText="INCIDENT STATUS: "+text;
 
+saveBoard();
+
 }
 
-function mayday(){
+function activateMayday(){
 
 document.getElementById("maydayBanner").style.display="block";
 
 document.getElementById("status").innerText="🚨 MAYDAY ACTIVE 🚨";
 
 window.scrollTo(0,0);
+
+saveBoard();
 
 }
 
@@ -418,7 +652,195 @@ document.getElementById("maydayBanner").style.display="none";
 
 document.getElementById("status").innerText="INCIDENT STATUS: ACTIVE";
 
+saveBoard();
+
 }
+
+function markAllPAR(){
+
+document.getElementById("parStatus").innerText="PAR STATUS: ALL PERSONNEL ACCOUNTED FOR ✔";
+
+saveBoard();
+
+}
+
+function clearPAR(){
+
+document.getElementById("parStatus").innerText="PAR STATUS: NOT COMPLETED";
+
+saveBoard();
+
+}
+
+function saveBoard(){
+
+const zones=[
+
+"available",
+
+"commandZone",
+
+"interior",
+
+"divisionA",
+
+"divisionB",
+
+"divisionC",
+
+"divisionD",
+
+"roof",
+
+"rit",
+
+"staging",
+
+"water",
+
+"rehab",
+
+"exterior"
+
+];
+
+const data={
+
+address:document.getElementById("address").value,
+
+type:document.getElementById("type").value,
+
+command:document.getElementById("command").value,
+
+status:document.getElementById("status").innerText,
+
+parStatus:document.getElementById("parStatus").innerText,
+
+notes:document.getElementById("notes").value,
+
+maydayName:document.getElementById("maydayName").value,
+
+maydayLocation:document.getElementById("maydayLocation").value,
+
+maydayAssignment:document.getElementById("maydayAssignment").value,
+
+maydayVisible:document.getElementById("maydayBanner").style.display,
+
+zones:{}
+
+};
+
+zones.forEach(function(zoneId){
+
+data.zones[zoneId]=[];
+
+document.querySelectorAll("#"+zoneId+" .person-tag").forEach(function(tag){
+
+data.zones[zoneId].push({
+
+id:tag.id,
+
+html:tag.innerHTML
+
+});
+
+});
+
+});
+
+localStorage.setItem("HHFDBoard",JSON.stringify(data));
+
+}
+
+function loadBoard(){
+
+const saved=localStorage.getItem("HHFDBoard");
+
+if(!saved)return;
+
+const data=JSON.parse(saved);
+
+document.getElementById("address").value=data.address||"";
+
+document.getElementById("type").value=data.type||"";
+
+document.getElementById("command").value=data.command||"Chief 3100";
+
+document.getElementById("status").innerText=data.status||"INCIDENT STATUS: ACTIVE";
+
+document.getElementById("parStatus").innerText=data.parStatus||"PAR STATUS: NOT COMPLETED";
+
+document.getElementById("notes").value=data.notes||"";
+
+document.getElementById("maydayName").value=data.maydayName||"";
+
+document.getElementById("maydayLocation").value=data.maydayLocation||"";
+
+document.getElementById("maydayAssignment").value=data.maydayAssignment||"";
+
+document.getElementById("maydayBanner").style.display=data.maydayVisible||"none";
+
+document.querySelectorAll(".person-tag").forEach(function(tag){
+
+tag.remove();
+
+});
+
+Object.keys(data.zones||{}).forEach(function(zoneId){
+
+const zone=document.getElementById(zoneId);
+
+if(!zone)return;
+
+data.zones[zoneId].forEach(function(person){
+
+const tag=document.createElement("div");
+
+tag.className="person-tag";
+
+tag.draggable=true;
+
+tag.id=person.id;
+
+tag.innerHTML=person.html;
+
+tag.onclick=function(event){
+
+event.stopPropagation();
+
+selectPerson(tag);
+
+};
+
+tag.ondragstart=function(event){
+
+event.dataTransfer.setData("text/plain",tag.id);
+
+};
+
+zone.appendChild(tag);
+
+});
+
+});
+
+}
+
+function resetBoard(){
+
+if(!confirm("Clear the entire incident board?"))return;
+
+localStorage.removeItem("HHFDBoard");
+
+location.reload();
+
+}
+
+window.onload=function(){
+
+loadBoard();
+
+};
 
 </script>
 
