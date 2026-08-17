@@ -1,55 +1,27 @@
-<div class="card">
+benchmarks=data.benchmarks||[];
 
-<h3>Command Benchmarks</h3>
+updateBenchmarkLog();
 
-<div class="assignment-grid">
+document.querySelectorAll(".benchmark-btn").forEach(function(button){
 
-<button class="gray benchmark-btn" onclick="toggleBenchmark(this,'Primary Search Complete')">
+button.classList.remove("green");
 
-PRIMARY SEARCH COMPLETE
+button.classList.add("gray");
 
-</button>
+benchmarks.forEach(function(item){
 
-<button class="gray benchmark-btn" onclick="toggleBenchmark(this,'Secondary Search Complete')">
+if(button.innerText.trim()===item.name.toUpperCase()){
 
-SECONDARY SEARCH COMPLETE
+button.classList.remove("gray");
 
-</button>
+button.classList.add("green");
 
-<button class="gray benchmark-btn" onclick="toggleBenchmark(this,'All Clear')">
+}
 
-ALL CLEAR
+});
 
-</button>
+});
 
-<button class="gray benchmark-btn" onclick="toggleBenchmark(this,'Utilities Controlled')">
+document.getElementById("customNoteLog").innerHTML=
 
-UTILITIES CONTROLLED
-
-</button>
-
-<button class="gray benchmark-btn" onclick="toggleBenchmark(this,'Water Supply Established')">
-
-WATER SUPPLY ESTABLISHED
-
-</button>
-
-<button class="gray benchmark-btn" onclick="toggleBenchmark(this,'RIT Established')">
-
-RIT ESTABLISHED
-
-</button>
-
-<button class="gray benchmark-btn" onclick="toggleBenchmark(this,'Ventilation Complete')">
-
-VENTILATION COMPLETE
-
-</button>
-
-<button class="gray benchmark-btn" onclick="toggleBenchmark(this,'Fire Under Control')">
-
-FIRE UNDER CONTROL
-
-</button>
-
-<button class="gray benchmark-btn" onclick="toggleBenchmark(this,'Loss Stopp
+data.customNotes||"";
