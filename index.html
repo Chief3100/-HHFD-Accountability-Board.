@@ -210,7 +210,26 @@ grid-template-columns:1fr;
 </head>
 
 <body>
+<div id="loginBox" style="padding:15px;background:#222;border-bottom:3px solid #7cff00;text-align:center;">
+  <h3 style="color:#7cff00;">HHFD ACCOUNTABILITY LOGIN</h3>
 
+  <input id="loginEmail" type="email" placeholder="Email"
+    style="padding:12px;margin:5px;width:90%;max-width:350px;">
+
+  <br>
+
+  <input id="loginPassword" type="password" placeholder="Password"
+    style="padding:12px;margin:5px;width:90%;max-width:350px;">
+
+  <br>
+
+  <button onclick="loginHHFD()"
+    style="padding:12px 30px;margin:8px;font-weight:bold;">
+    SIGN IN
+  </button>
+
+  <div id="loginStatus"></div>
+</div>
 <div id="maydayBanner">
 🚨 MAYDAY ACTIVE 🚨
 </div>
@@ -1098,12 +1117,30 @@ window.onload=function(){
 loadBoard();
 };
 
+async function loginHHFD() {
+    const email = document.getElementById("loginEmail").value.trim();
+    const password = document.getElementById("loginPassword").value;
+    const status = document.getElementById("loginStatus");
+
+    status.innerText = "Signing in...";
+
+    if (typeof window.hhfdLogin !== "function") {
+        status.innerText = "Firebase is not ready.";
+        return;
+    }
+
+    const success = await window.hhfdLogin(email, password);
+
+    if (success) {
+        status.innerText = "SIGNED IN - FIREBASE CONNECTED";
+        document.getElementById("loginBox").style.display = "none";
+    } else {
+        status.innerText = "LOGIN FAILED";
+    }
+}
 </script>
 
-</body>
-</html>
 <script type="module">
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
 
 import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js";
@@ -1157,7 +1194,5 @@ window.hhfdLogin = async function(email, password) {
 
 </script>
 
-
-
-
-  
+</body>
+</html>
