@@ -4,59 +4,424 @@
 
 <head>
 
-  <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>HHFD Digital Accountability Board</title>
+<title>HHFD Accountability Board</title>
 
-  <style>
+<style>
 
-    * {
+body{
 
-      box-sizing: border-box;
+margin:0;
 
-    }
+font-family:Arial,sans-serif;
 
-    body {
+background:#111;
 
-      margin: 0;
+color:white;
 
-      font-family: Arial, Helvetica, sans-serif;
+}
 
-      background: #111;
+header{
 
-      color: white;
+background:#222;
 
-    }
+border-bottom:5px solid #7cff00;
 
-    header {
+padding:15px;
 
-      background: #1b1b1b;
+text-align:center;
 
-      border-bottom: 4px solid #7cff00;
+}
 
-      padding: 15px;
+h1{
 
-      text-align: center;
+margin:0;
 
-    }
+color:#7cff00;
 
-    header h1 {
+font-size:28px;
 
-      margin: 0;
+}
 
-      color: #7cff00;
+h2{
 
-      font-size: 30px;
+margin:5px 0;
 
-    }
+font-size:17px;
 
-    header h2 {
+}
 
-      margin: 5px 0 0;
+.container{
 
-      font-size: 18px;
+padding:12px;
 
-      font-weight: normal;
-      
+}
+
+.card{
+
+background:#222;
+
+border:1px solid #444;
+
+border-radius:8px;
+
+padding:12px;
+
+margin-bottom:12px;
+
+}
+
+.card h3{
+
+margin-top:0;
+
+color:#7cff00;
+
+}
+
+input,textarea,select,button{
+
+width:100%;
+
+padding:10px;
+
+margin:5px 0;
+
+font-size:16px;
+
+border-radius:5px;
+
+border:1px solid #555;
+
+box-sizing:border-box;
+
+}
+
+input,textarea,select{
+
+background:#333;
+
+color:white;
+
+}
+
+button{
+
+font-weight:bold;
+
+cursor:pointer;
+
+}
+
+.green{
+
+background:#7cff00;
+
+color:black;
+
+}
+
+.yellow{
+
+background:#ffd400;
+
+color:black;
+
+}
+
+.red{
+
+background:#d60000;
+
+color:white;
+
+}
+
+.gray{
+
+background:#555;
+
+color:white;
+
+}
+
+.grid{
+
+display:grid;
+
+grid-template-columns:repeat(2,1fr);
+
+gap:10px;
+
+}
+
+.member{
+
+background:#333;
+
+padding:8px;
+
+margin:5px 0;
+
+border-radius:5px;
+
+}
+
+#maydayBanner{
+
+display:none;
+
+background:red;
+
+padding:15px;
+
+font-size:28px;
+
+font-weight:bold;
+
+text-align:center;
+
+}
+
+.status{
+
+text-align:center;
+
+font-size:20px;
+
+font-weight:bold;
+
+padding:10px;
+
+}
+
+@media(max-width:800px){
+
+.grid{
+
+grid-template-columns:1fr;
+
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="maydayBanner">
+
+🚨 MAYDAY ACTIVE 🚨
+
+</div>
+
+<header>
+
+<h1>HOLLYWOOD HEIGHTS FIRE DEPARTMENT</h1>
+
+<h2>DIGITAL ACCOUNTABILITY BOARD</h2>
+
+</header>
+
+<div class="container">
+
+<div class="card">
+
+<h3>Incident Information</h3>
+
+<input id="address" placeholder="Incident Address">
+
+<input id="type" placeholder="Incident Type">
+
+<input id="command" value="Chief 3100" placeholder="Incident Commander">
+
+</div>
+
+<div class="card">
+
+<h3>Incident Status</h3>
+
+<div class="grid">
+
+<button class="yellow" onclick="setStatus('WORKING FIRE')">WORKING FIRE</button>
+
+<button class="red" onclick="setStatus('DEFENSIVE')">DEFENSIVE</button>
+
+<button class="green" onclick="setStatus('UNDER CONTROL')">UNDER CONTROL</button>
+
+<button class="red" onclick="mayday()">MAYDAY</button>
+
+</div>
+
+<div id="status" class="status">INCIDENT STATUS: ACTIVE</div>
+
+</div>
+
+<div class="card">
+
+<h3>Chief 3100</h3>
+
+<input id="chiefName" placeholder="Add Personnel">
+
+<button class="green" onclick="addMember('chiefName','chiefCrew')">ADD PERSONNEL</button>
+
+<div id="chiefCrew"></div>
+
+</div>
+
+<div class="card">
+
+<h3>Pumper 3111</h3>
+
+<input id="p3111Name" placeholder="Add Firefighter">
+
+<button class="green" onclick="addMember('p3111Name','p3111Crew')">ADD FIREFIGHTER</button>
+
+<div id="p3111Crew"></div>
+
+</div>
+
+<div class="card">
+
+<h3>Pumper 3112</h3>
+
+<input id="p3112Name" placeholder="Add Firefighter">
+
+<button class="green" onclick="addMember('p3112Name','p3112Crew')">ADD FIREFIGHTER</button>
+
+<div id="p3112Crew"></div>
+
+</div>
+
+<div class="card">
+
+<h3>Hook & Ladder 3129</h3>
+
+<input id="ladderName" placeholder="Add Firefighter">
+
+<button class="green" onclick="addMember('ladderName','ladderCrew')">ADD FIREFIGHTER</button>
+
+<div id="ladderCrew"></div>
+
+</div>
+
+<div class="card">
+
+<h3>Fireground Assignments</h3>
+
+<textarea placeholder="Interior Crew"></textarea>
+
+<textarea placeholder="Exterior Crew"></textarea>
+
+<textarea placeholder="Roof / Ventilation"></textarea>
+
+<textarea placeholder="RIT"></textarea>
+
+<textarea placeholder="Staging"></textarea>
+
+<textarea placeholder="Water Supply"></textarea>
+
+</div>
+
+<div class="card">
+
+<h3>PAR</h3>
+
+<input placeholder="Crew / Division">
+
+<div class="grid">
+
+<button class="green" onclick="this.innerText='PAR ✔'">PAR</button>
+
+<button class="red" onclick="this.innerText='MISSING'">MISSING</button>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<h3>Mayday Information</h3>
+
+<input placeholder="Firefighter Name / Unit">
+
+<input placeholder="Last Known Location">
+
+<input placeholder="Assignment">
+
+<div class="grid">
+
+<button class="red" onclick="mayday()">ACTIVATE MAYDAY</button>
+
+<button class="gray" onclick="clearMayday()">CLEAR MAYDAY</button>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<h3>Command Notes / Benchmarks</h3>
+
+<textarea style="height:140px" placeholder="Primary search complete&#10;Secondary search complete&#10;Utilities controlled&#10;Fire under control&#10;PAR complete"></textarea>
+
+</div>
+
+</div>
+
+<script>
+
+function addMember(inputId,listId){
+
+const input=document.getElementById(inputId);
+
+if(!input.value.trim())return;
+
+const member=document.createElement("div");
+
+member.className="member";
+
+member.innerHTML=input.value+
+
+' <button class="red" style="width:auto" onclick="this.parentElement.remove()">REMOVE</button>';
+
+document.getElementById(listId).appendChild(member);
+
+input.value="";
+
+}
+
+function setStatus(text){
+
+document.getElementById("status").innerText="INCIDENT STATUS: "+text;
+
+}
+
+function mayday(){
+
+document.getElementById("maydayBanner").style.display="block";
+
+document.getElementById("status").innerText="🚨 MAYDAY ACTIVE 🚨";
+
+window.scrollTo(0,0);
+
+}
+
+function clearMayday(){
+
+document.getElementById("maydayBanner").style.display="none";
+
+document.getElementById("status").innerText="INCIDENT STATUS: ACTIVE";
+
+}
+
+</script>
+
+</body>
+
+</html>
