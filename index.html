@@ -959,9 +959,11 @@ unit:tag.dataset.unit
 
 
 localStorage.setItem(
-"HHFDBoard",
-JSON.stringify(data)
+  "HHFDBoard",
+  JSON.stringify(data)
 );
+
+if (window.firebaseSaveBoard) window.firebaseSaveBoard(data);
 }
 
 
@@ -1104,7 +1106,7 @@ loadBoard();
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
 
-import { getDatabase } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js";
+import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
 const firebaseConfig = {
 
@@ -1130,7 +1132,17 @@ const firebaseApp = initializeApp(firebaseConfig);
 
 const firebaseDatabase = getDatabase(firebaseApp);
 const auth = getAuth(firebaseApp);
-console.log("HHFD Firebase connected");
+  const boardRef = ref(firebaseDatabase, "boards/main");
+  window.firebaseSaveBoard = async function(data) { if (!auth.currentUser) return; await set(boardRef, data); };
+  onAuthStateChanged(auth, function(user) {
+    if (user) {
+      onValue(boardRef, function(snapshot) {
+        const data = snapshot.val();
+        if (data && window.applyFirebaseBoard) window.applyFirebaseBoard(data);
+    });
+  }
+});
+ window.applyFirebaseBoard = function(data) { localStorage.setItem("HHFDBoard", JSON.stringify(data)); if (typeof window.loadBoard === "function") window.loadBoard(); };
 window.hhfdLogin = async function(email, password) {
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -1141,7 +1153,7 @@ window.hhfdLogin = async function(email, password) {
     alert("Login failed. Check your email and password.");
     return false;
     }
-};
+  };
 
 </script>
 
