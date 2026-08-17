@@ -1100,3 +1100,36 @@ loadBoard();
 
 </body>
 </html>
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+
+import { getDatabase } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js";
+
+const firebaseConfig = {
+
+  apiKey: "AIzaSyDBhLMPdltGHUa4eAmCiNpCoiaBVejQ-hc",
+
+  authDomain: "hhfd-accountability.firebaseapp.com",
+
+  databaseURL: "https://hhfd-accountability-default-rtdb.firebaseio.com",
+
+  projectId: "hhfd-accountability",
+
+  storageBucket: "hhfd-accountability.firebasestorage.app",
+
+  messagingSenderId: "205484961445",
+
+  appId: "1:205484961445:web:fcee3e0b0f3efef188674c",
+
+  measurementId: "G-JM5ZHB780M"
+
+};
+
+const firebaseApp = initializeApp(firebaseConfig);
+
+const firebaseDatabase = getDatabase(firebaseApp);
+
+console.log("HHFD Firebase connected");
+
+</script>
