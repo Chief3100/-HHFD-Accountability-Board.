@@ -1105,7 +1105,7 @@ loadBoard();
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
 
 import { getDatabase } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js";
-
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
 const firebaseConfig = {
 
   apiKey: "AIzaSyDBhLMPdltGHUa4eAmCiNpCoiaBVejQ-hc",
@@ -1129,7 +1129,23 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 
 const firebaseDatabase = getDatabase(firebaseApp);
-
+const auth = getAuth(firebaseApp);
 console.log("HHFD Firebase connected");
+window.hhfdLogin = async function(email, password) {
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    console.log("HHFD Login Successful:", userCredential.user.email);
+    return true;
+  } catch (error) {
+    console.error("HHFD Login Failed:", error);
+    alert("Login failed. Check your email and password.");
+    return false;
+    }
+};
 
 </script>
+
+
+
+
+  
