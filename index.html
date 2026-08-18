@@ -223,7 +223,7 @@ grid-template-columns:1fr;
 
   <br>
 
-  <button onclick="loginHHFD()"
+  <button onclick="enableAlertSound(); loginHHFD()"
     style="padding:12px 30px;margin:8px;font-weight:bold;">
     SIGN IN
   </button>
@@ -268,8 +268,7 @@ DEFENSIVE
 UNDER CONTROL
 </button>
 
-<button class="red" onclick="playMaydayAlarm(); activateMayday()">
-🚨 MAYDAY
+<button class="red" onclick="playMaydayAlarm(); activateMayday(); if(window.firebaseTriggerMayday) window.firebaseTriggerMayday();">
 </button>
 
 </div>
@@ -1111,11 +1110,25 @@ localStorage.removeItem("HHFDBoard");
 
 location.reload();
 }
+let hhfdAudioContext = null;
 
-function playMaydayAlarm() {
+function enableAlertSound() {
   const AudioContext = window.AudioContext || window.webkitAudioContext;
-  const ctx = new AudioContext();
+
+  if (!hhfdAudioContext) {
+    hhfdAudioContext = new AudioContext();
+  }
+
+  if (hhfdAudioContext.state === "suspended") {
+    hhfdAudioContext.resume();
+  }
+}
+function playMaydayAlarm() {
+  if (!hhfdAudioContext) return;
+  const ctx = hhfdAudioContext;
   const start = ctx.currentTime;
+
+
 
   for (let i = 0; i < 10; i++) {
     const osc = ctx.createOscillator();
@@ -1194,13 +1207,34 @@ const firebaseApp = initializeApp(firebaseConfig);
 const firebaseDatabase = getDatabase(firebaseApp);
 const auth = getAuth(firebaseApp);
   const boardRef = ref(firebaseDatabase, "boards/main");
-  window.firebaseSaveBoard = async function(data) { if (!auth.currentUser) return; await set(boardRef, data); };
+ const maydayRef = ref(firebaseDatabase, "alerts/mayday"); 
+  window.firebaseTriggerMayday = async function() {
+  if (!auth.currentUser) return;
+
+  await set(maydayRef, {
+    active: true,
+    time: Date.now()
+  });
+};window.firebaseSaveBoard = async function(data) { if (!auth.currentUser) return; await set(boardRef, data); };
   onAuthStateChanged(auth, function(user) {
     if (user) {
       onValue(boardRef, function(snapshot) {
         const data = snapshot.val();
         if (data && window.applyFirebaseBoard) window.applyFirebaseBoard(data);
     });
+      onValue(maydayRef, function(snapshot) {
+  const mayday = snapshot.val();
+
+  if (mayday && mayday.active && mayday.time) {
+    if (!window.lastMaydayTime || mayday.time > window.lastMaydayTime) {
+      window.lastMaydayTime = mayday.time;
+
+      if (typeof window.playMaydayAlarm === "function") {
+        window.playMaydayAlarm();
+      }
+    }
+  }
+});
   }
 });
  window.applyFirebaseBoard = function(data) { localStorage.setItem("HHFDBoard", JSON.stringify(data)); if (typeof window.loadBoard === "function") window.loadBoard(); };
