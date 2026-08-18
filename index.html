@@ -268,7 +268,7 @@ DEFENSIVE
 UNDER CONTROL
 </button>
 
-<button class="red" onclick="activateMayday()">
+<button class="red" onclick="playMaydayAlarm(); activateMayday()">
 🚨 MAYDAY
 </button>
 
@@ -1112,7 +1112,31 @@ localStorage.removeItem("HHFDBoard");
 location.reload();
 }
 
+function playMaydayAlarm() {
+  const AudioContext = window.AudioContext || window.webkitAudioContext;
+  const ctx = new AudioContext();
+  const start = ctx.currentTime;
 
+  for (let i = 0; i < 10; i++) {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = "square";
+    osc.frequency.value = (i % 2 === 0) ? 900 : 650;
+
+    gain.gain.setValueAtTime(0.3, start + (i * 0.35));
+    gain.gain.exponentialRampToValueAtTime(
+      0.001,
+      start + (i * 0.35) + 0.3
+    );
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(start + (i * 0.35));
+    osc.stop(start + (i * 0.35) + 0.3);
+  }
+}
 window.onload=function(){
 loadBoard();
 };
